@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">📐 离散数学 · 期末复习 · Discrete Math Final Review</title>
+<script src="question-loader.js"></script>
+<style>
+/* ===== Reset & Theme ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f0f2f5; color: #333; min-height: 100vh;
+}
+a { color: #2d6a9f; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ===== Navbar ===== */
+.navbar {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%);
+  color: #fff; padding: 14px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15); position: sticky; top: 0; z-index: 100;
+}
+.navbar h1 { font-size: 18px; display: flex; align-items: center; gap: 8px; }
+.navbar .nav-right { display: flex; align-items: center; gap: 16px; }
+.navbar .stats { font-size: 13px; opacity: .9; white-space: nowrap; }
+.navbar .stats span { margin-left: 8px; }
+
+/* ===== Language toggle ===== */
+.lang-toggle {
+  display: flex; background: rgba(255,255,255,.15); border-radius: 6px; overflow: hidden;
+  cursor: pointer; user-select: none; font-size: 13px; font-weight: 600; flex-shrink: 0;
+}
+.lang-toggle div {
+  padding: 4px 10px; transition: all .2s; color: rgba(255,255,255,.6);
+}
+.lang-toggle div.active { background: #fff; color: #1a3a5c; }
+
+.loading-bar { height: 3px; background: #ffd700; transition: width .4s; width: 0%; }
+
+/* ===== Mode bar ===== */
+.mode-bar {
+  display: flex; background: #fff; border-bottom: 1px solid #e0e0e0;
+  position: sticky; top: 56px; z-index: 99; overflow-x: auto; align-items: stretch;
+}
+.mode-tab {
+  text-align: center; padding: 12px 16px; cursor: pointer;
+  font-size: 14px; font-weight: 500; color: #666; border-bottom: 3px solid transparent;
+  transition: all .2s; user-select: none; white-space: nowrap;
+}
+.mode-tab:hover { background: #f7f9fc; }
+.mode-tab.active { color: #1a3a5c; border-bottom-color: #2d6a9f; background: #f0f6ff; }
+
+/* ===== Search box ===== */
+.search-box {
+  display: flex; align-items: center; margin-left: auto; padding: 0 12px; flex-shrink: 0;
+}
+.search-box input {
+  padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px;
+  font-size: 13px; width: 140px; outline: none;
+}
+.search-box input:focus { border-color: #2d6a9f; }
+.search-box button {
+  padding: 6px 10px; background: #2d6a9f; color: #fff;
+  border: none; border-radius: 6px; margin-left: 6px; cursor: pointer; font-size: 13px;
+}
+.search-box button:hover { background: #1a4a7a; }
+
+/* ===== Stats bar ===== */
+.stats-bar {
+  display: flex; justify-content: center; gap: 24px; padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 10px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.stats-item { text-align: center; }
+.stats-item .value { font-size: 24px; font-weight: 700; color: #0369a1; }
+.stats-item .label { font-size: 12px; color: #64748b; }
+.stats-item.correct .value { color: #16a34a; }
+.stats-item.wrong .value { color: #dc2626; }
+
+/* ===== Type tabs ===== */
+.type-tabs {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+}
+.type-tab {
+  padding: 6px 16px; border-radius: 20px; background: #f0f2f5;
+  cursor: pointer; font-size: 14px; border: 1px solid transparent;
+  transition: all .2s; user-select: none;
+}
+.type-tab:hover { background: #e4e7eb; }
+.type-tab.active { background: #2d6a9f; color: #fff; border-color: #2d6a9f; }
+.type-tab .count { font-size: 12px; opacity: .7; margin-left: 4px; }
+
+/* ===== Timer ===== */
+.timer-box {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+  background: #fff3cd; border-radius: 8px; margin-bottom: 16px;
+  font-size: 16px; font-weight: 600; color: #856404;
+}
+.timer-box.warning { background: #fef08a; color: #a16207; }
+.timer-box.danger { background: #fee2e2; color: #dc2626; animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+/* ===== Question area ===== */
+.question-area { min-height: 200px; }
+.q-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px; font-size: 13px; color: #888;
+}
+.q-header .q-progress { font-weight: 600; color: #333; font-size: 15px; }
+.q-title { font-size: 16px; line-height: 1.6; margin-bottom: 14px; font-weight: 500; word-break: break-word; }
+.q-desc { font-size: 14px; color: #555; margin-bottom: 14px; line-height: 1.5; }
+.q-code {
+  background: #1e293b; color: #e2e8f0; border-radius: 8px; padding: 16px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+  font-size: 13px; line-height: 1.5; overflow-x: auto; white-space: pre-wrap;
+  margin-bottom: 14px;
+}
+
+/* ===== Options ===== */
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px;
+  cursor: pointer; transition: all .2s; font-size: 15px;
+}
+.option:hover:not(.disabled) { border-color: #2d6a9f; background: #f7faff; }
+.option.selected { border-color: #2d6a9f; background: #e8f0fe; }
+.option .letter {
+  width: 28px; height: 28px; border-radius: 50%; background: #f0f2f5;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 13px; flex-shrink: 0;
+}
+.option.selected .letter { background: #2d6a9f; color: #fff; }
+.option.correct { border-color: #16a34a; background: #f0fdf4; }
+.option.correct .letter { background: #16a34a; color: #fff; }
+.option.wrong { border-color: #dc2626; background: #fef2f2; }
+.option.wrong .letter { background: #dc2626; color: #fff; }
+.option.disabled { cursor: default; opacity: .8; }
+
+/* ===== Result/Explanation ===== */
+.result-box { margin-top: 14px; padding: 12px 16px; border-radius: 10px; font-size: 15px; font-weight: 500; }
+.result-box.correct { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.result-box.wrong { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.explanation-box {
+  margin-top: 14px; padding: 14px; border-radius: 10px;
+  background: #f0f9ff; border: 1px solid #bae6fd;
+  font-size: 14px; line-height: 1.8; color: #0369a1;
+  white-space: pre-wrap; word-break: break-all;
+}
+.explanation-box .label { font-weight: 600; margin-bottom: 8px; display: block; font-size: 15px; }
+
+/* ===== Buttons ===== */
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.btn {
+  padding: 8px 20px; border: none; border-radius: 8px; font-size: 14px;
+  cursor: pointer; transition: all .2s; font-weight: 500;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary { background: #2d6a9f; color: #fff; }
+.btn-primary:hover { background: #1a4a7a; }
+.btn-success { background: #16a34a; color: #fff; }
+.btn-success:hover { background: #15803d; }
+.btn-outline { background: #fff; color: #333; border: 1px solid #ddd; }
+.btn-outline:hover { background: #f7f9fc; }
+.btn-danger { background: #dc2626; color: #fff; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-warning { background: #f59e0b; color: #fff; }
+.btn-warning:hover { background: #d97706; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ===== Wrong book ===== */
+.wrong-item {
+  padding: 14px 16px; border-left: 4px solid #dc2626; background: #fef2f2;
+  border-radius: 8px; margin-bottom: 12px;
+}
+.wrong-item .q-header { margin-bottom: 8px; }
+.wrong-item .q-text { font-weight: 500; margin-bottom: 8px; font-size: 15px; }
+.wrong-item .detail { font-size: 13px; color: #888; margin-bottom: 8px; }
+.wrong-item .detail .your { color: #dc2626; }
+.wrong-item .detail .correct-ans { color: #16a34a; }
+.wrong-item .error-count {
+  display: inline-block; padding: 2px 10px; background: #dc2626; color: #fff;
+  border-radius: 12px; font-size: 12px; font-weight: 600;
+}
+.wrong-empty { text-align: center; color: #999; padding: 40px 0; font-size: 15px; }
+.action-row { display: flex; gap: 8px; margin-top: 12px; }
+
+/* ===== Exam result ===== */
+.result-panel { text-align: center; padding: 30px; }
+.result-panel .score { font-size: 48px; font-weight: 700; margin-bottom: 10px; }
+.result-panel .score.pass { color: #16a34a; }
+.result-panel .score.fail { color: #dc2626; }
+.result-panel .stats { font-size: 14px; color: #666; margin-bottom: 20px; }
+.result-panel .stats span { margin: 0 12px; }
+
+/* ===== Question grid (answer sheet) ===== */
+.question-grid {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  max-height: 200px; overflow-y: auto; padding: 10px;
+  background: #f8fafc; border-radius: 10px;
+}
+.question-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all .2s; border: 2px solid #d1d5db; color: #6b7280;
+}
+.question-num.answered { border-color: #2d6a9f; color: #2d6a9f; background: #e8f0fe; }
+.question-num.correct { background: #dcfce7; color: #166534; border-color: #22c55e; }
+.question-num.wrong { background: #fee2e2; color: #991b1b; border-color: #ef4444; }
+.question-num:hover { transform: scale(1.1); box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+
+/* ===== Knowledge card ===== */
+.knowledge-card {
+  background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08); border-left: 4px solid #2d6a9f;
+}
+.knowledge-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+.knowledge-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.knowledge-title { font-size: 18px; font-weight: 600; color: #1e293b; }
+.knowledge-category {
+  padding: 4px 12px; background: #e0e7ff; color: #4338ca;
+  border-radius: 12px; font-size: 12px;
+}
+.knowledge-content {
+  font-size: 14px; line-height: 1.8; color: #334155;
+  white-space: pre-wrap; word-break: break-all;
+}
+.knowledge-empty { text-align: center; padding: 40px; color: #999; }
+
+/* ===== Settings panel ===== */
+.setting-group { margin-bottom: 16px; }
+.setting-group label { display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+.setting-group select, .setting-group input {
+  padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px;
+  font-size: 14px; width: 100%; outline: none;
+}
+.setting-group select:focus, .setting-group input:focus { border-color: #2d6a9f; box-shadow: 0 0 0 3px rgba(45,106,159,.1); }
+.setting-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.setting-row .setting-group { flex: 1; min-width: 140px; }
+
+/* ===== Summary table ===== */
+.summary-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 14px; }
+.summary-table th { background: #f1f5f9; padding: 10px 12px; text-align: left; font-weight: 600; color: #475569; }
+.summary-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
+.summary-table tr:last-child td { border-bottom: none; }
+
+/* ===== Layout helpers ===== */
+.container { max-width: 820px; margin: 0 auto; padding: 16px; }
+.panel { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.panel-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #1e293b; }
+.hidden { display: none !important; }
+.placeholder { text-align: center; color: #999; padding: 60px 20px; }
+.placeholder .icon { font-size: 48px; margin-bottom: 12px; }
+.placeholder p { font-size: 15px; line-height: 1.6; }
+
+/* ===== Filter buttons ===== */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-btn {
+  padding: 6px 16px; border-radius: 20px; border: 1px solid #d1d5db;
+  background: #fff; cursor: pointer; font-size: 13px; transition: all .2s;
+}
+.filter-btn:hover { background: #f1f5f9; }
+.filter-btn.active { background: #2d6a9f; color: #fff; border-color: #2d6a9f; }
+
+/* ===== Textarea ===== */
+.q-textarea {
+  width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;
+  font-family: inherit; font-size: 14px; line-height: 1.6; resize: vertical; outline: none;
+  min-height: 80px;
+}
+.q-textarea:focus { border-color: #2d6a9f; }
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .navbar h1 { font-size: 15px; }
+  .navbar .stats { font-size: 11px; }
+  .q-title { font-size: 15px; }
+  .mode-tab { padding: 10px 10px; font-size: 13px; }
+  .search-box input { width: 100px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Navbar ===== -->
+<div class="navbar">
+  <h1 id="navTitle">📐 离散数学 · 期末复习</h1>
+  <div class="nav-right">
+    <div class="stats" id="navStats">
+      <span id="navStatsLabel">📊</span>
+      <span id="totalQCount">0</span> ·
+      <span id="navDoneLabel">✅</span> <span id="totalDone">0</span> ·
+      <span id="navRateLabel">🎯</span> <span id="totalRate">0%</span>
+    </div>
+    <div class="lang-toggle" onclick="toggleLang()">
+      <div id="langZh" class="active">中</div>
+      <div id="langEn">EN</div>
+    </div>
+  </div>
+</div>
+<div class="loading-bar" id="loadingBar"></div>
+
+<!-- ===== Mode bar ===== -->
+<div class="mode-bar">
+  <div class="mode-tab active" data-mode="practice" onclick="switchMode('practice')">
+    <span data-i18n="tabPractice">✏️ 练习模式</span>
+  </div>
+  <div class="mode-tab" data-mode="exam" onclick="switchMode('exam')">
+    <span data-i18n="tabExam">📝 考试模式</span>
+  </div>
+  <div class="mode-tab" data-mode="wrongbook" onclick="switchMode('wrongbook')">
+    <span data-i18n="tabWrong">📕 错题本</span> (<span id="wrongTabCount">0</span>)
+  </div>
+  <div class="mode-tab" data-mode="knowledge" onclick="switchMode('knowledge')">
+    <span data-i18n="tabKnowledge">📚 知识点</span>
+  </div>
+  <div class="search-box">
+    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="搜索…" onkeyup="if(event.key==='Enter')performSearch()">
+    <button onclick="performSearch()">🔍</button>
+  </div>
+</div>
+
+<!-- ===== Main Content ===== -->
+<div class="container">
+  <div id="statsBarContainer"></div>
+
+  <!-- ──── Practice Mode ──── -->
+  <div id="mode-practice">
+    <div class="type-tabs" id="practiceTypeTabs"></div>
+    <div class="panel" id="practiceSettings">
+      <div class="panel-title" data-i18n="practiceSettings">⚙️ 练习设置</div>
+      <div class="setting-row">
+        <div class="setting-group">
+          <label data-i18n="questionCount">题目数量</label>
+          <input type="number" id="practiceCount" value="10" min="1" max="200">
+        </div>
+        <div class="setting-group">
+          <label data-i18n="showExplanation">显示解析</label>
+          <select id="practiceShowExplanation">
+            <option value="yes" data-i18n="yes">✅ 是</option>
+            <option value="no" data-i18n="no">❌ 否</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="startPractice()"><span data-i18n="startPractice">🚀 开始练习</span></button>
+    </div>
+    <div class="panel hidden" id="practicePanel">
+      <div class="q-header">
+        <span class="q-progress" id="practiceProgress"></span>
+        <span id="practiceTypeLabel" style="background:#eef2ff;padding:2px 10px;border-radius:12px;font-size:13px;color:#4f46e5"></span>
+      </div>
+      <div class="question-area" id="practiceQuestionArea"></div>
+    </div>
+    <div class="panel hidden" id="practiceEnd">
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <h3 data-i18n="practiceComplete">练习完成！</h3>
+        <div id="practiceEndStats" style="font-size:15px;color:#666;margin:12px 0"></div>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn btn-primary" onclick="startPractice()"><span data-i18n="anotherRound">🔄 再来一轮</span></button>
+          <button class="btn btn-outline" onclick="switchMode('practice')"><span data-i18n="backToSelect">🏠 返回选择</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="placeholder" id="practiceEmpty">
+      <div class="icon">📭</div>
+      <p data-i18n="loadingQuestions">题库加载中……</p>
+    </div>
+  </div>
+
+  <!-- ──── Exam Mode ──── -->
+  <div id="mode-exam" class="hidden">
+    <div class="panel" id="examSetup">
+      <div class="panel-title"><span data-i18n="examSettings">📝 考试设置</span></div>
+      <div class="setting-row">
+        <div class="setting-group">
+          <label data-i18n="examSubject">考试科目</label>
+          <select id="examType"></select>
+        </div>
+        <div class="setting-group">
+          <label data-i18n="questionCount">题目数量</label>
+          <input type="number" id="examCount" value="20" min="1" max="200">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-group">
+          <label data-i18n="timeLimit">时限（分钟）</label>
+          <input type="number" id="examTimeLimit" value="30" min="1" max="180">
+        </div>
+        <div class="setting-group">
+          <label data-i18n="passScore">及格线 (%)</label>
+          <input type="number" id="examPassScore" value="60" min="0" max="100">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="startExam()"><span data-i18n="startExam">🎯 开始考试</span></button>
+    </div>
+    <div class="panel hidden" id="examPanel">
+      <div class="timer-box" id="examTimer">⏱️ <span id="examTimeDisplay">00:00</span></div>
+      <div class="q-header">
+        <span class="q-progress" id="examProgress"></span>
+      </div>
+      <div class="question-area" id="examQuestionArea"></div>
+      <div style="margin-top:16px;text-align:center">
+        <button class="btn btn-success" onclick="submitExam()"><span data-i18n="submitExam">📤 交卷</span></button>
+      </div>
+    </div>
+    <div class="panel hidden" id="examResult"></div>
+  </div>
+
+  <!-- ──── Wrong Book ──── -->
+  <div id="mode-wrongbook" class="hidden">
+    <div class="panel">
+      <h2 style="font-size:18px;margin-bottom:4px"><span data-i18n="wrongBookTitle">📕 错题本</span> <span id="wrongTitleCount" style="font-size:13px;color:#888"></span></h2>
+      <p style="font-size:13px;color:#999;margin-bottom:12px" data-i18n="wrongBookDesc">答错的题目自动收录</p>
+      <div id="wrongList"><div class="wrong-empty">✨ <span data-i18n="noWrong">暂无错题，继续加油！</span></div></div>
+      <div class="action-row" id="wrongActions" style="display:none">
+        <button class="btn btn-primary" onclick="replayWrong()"><span data-i18n="redoWrong">🔄 重做错题</span></button>
+        <button class="btn btn-danger" onclick="clearWrongBook()"><span data-i18n="clearWrong">🗑️ 清空</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── Knowledge ──── -->
+  <div id="mode-knowledge" class="hidden">
+    <div class="panel">
+      <div class="panel-title"><span data-i18n="knowledgeTitle">📚 知识点</span></div>
+      <p style="font-size:13px;color:#999;margin-bottom:16px" data-i18n="knowledgeDesc">自定义知识点集中展示</p>
+      <div class="filter-bar" id="knowledgeFilterBar"></div>
+      <div id="knowledgeList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ============================================================
+   *  🌐 Internationalization (i18n) — 双语支持
+   * ============================================================ */
+  var LANG = 'zh';  // 'zh' or 'en'
+
+  var i18n = {
+    zh: {
+      navTitle: '📐 离散数学 · 期末复习',
+      tabPractice: '✏️ 练习模式',
+      tabExam: '📝 考试模式',
+      tabWrong: '📕 错题本',
+      tabKnowledge: '📚 知识点',
+      searchPlaceholder: '搜索…',
+      questionCount: '题目数量',
+      showExplanation: '显示解析',
+      yes: '✅ 是',
+      no: '❌ 否',
+      startPractice: '🚀 开始练习',
+      practiceSettings: '⚙️ 练习设置',
+      practiceComplete: '练习完成！',
+      anotherRound: '🔄 再来一轮',
+      backToSelect: '🏠 返回选择',
+      loadingQuestions: '题库加载中……',
+      examSettings: '📝 考试设置',
+      examSubject: '考试科目',
+      timeLimit: '时限（分钟）',
+      passScore: '及格线 (%)',
+      startExam: '🎯 开始考试',
+      submitExam: '📤 交卷',
+      wrongBookTitle: '📕 错题本',
+      wrongBookDesc: '答错的题目自动收录',
+      noWrong: '暂无错题，继续加油！',
+      redoWrong: '🔄 重做错题',
+      clearWrong: '🗑️ 清空',
+      knowledgeTitle: '📚 知识点',
+      knowledgeDesc: '自定义知识点集中展示',
+      totalQuestions: '总题数',
+      done: '已做',
+      rate: '正确率',
+      noQuestions: '❌ 未找到题目。请先在 questions/ 目录下添加题目文件。',
+      selectTypeFirst: '请先选择一个题型',
+      noQuestionsForType: '该题型暂无题目',
+      prev: '⬅️ 上一题',
+      next: '➡️ 下一题',
+      correct: '✅ 回答正确！',
+      wrong: '❌ 回答错误',
+      correctAnswer: '正确答案',
+      explanation: '💡 解析',
+      noExplanation: '暂未收录解析',
+      submitAnswer: '✅ 提交答案',
+      inputAnswer: '在此输入你的答案…',
+      confirmSubmit: '请先输入答案再提交',
+      examFinished: '📊 考试结束！',
+      passLabel: '🎉 恭喜通过！',
+      failLabel: '😅 未通过，再接再厉！',
+      score: '得分',
+      correctCount: '正确',
+      wrongCount: '错误',
+      accuracy: '正确率',
+      timeUsed: '用时',
+      reviewAnswers: '📋 查看答题详情',
+      close: '关闭',
+      detail: '详情',
+      yourAnswer: '你的答案',
+      answerLabel: '答案',
+      noKnowledge: '暂无知识点内容',
+      totalLabel: '总',
+      encouragement: {
+        start: '开始做题吧！🚀',
+        excellent: '太棒了！你是学霸！🎉',
+        great: '非常优秀！继续保持！🌟',
+        good: '表现不错！加油！💪',
+        pass: '及格了，还需努力！📚',
+        keep: '别灰心，坚持就是胜利！🔥'
+      },
+      timeRemaining: '剩余时间',
+    },
+    en: {
+      navTitle: '📐 Discrete Math · Final Review',
+      tabPractice: '✏️ Practice',
+      tabExam: '📝 Exam',
+      tabWrong: '📕 Wrong Book',
+      tabKnowledge: '📚 Knowledge',
+      searchPlaceholder: 'Search…',
+      questionCount: 'Question Count',
+      showExplanation: 'Show Explanation',
+      yes: '✅ Yes',
+      no: '❌ No',
+      startPractice: '🚀 Start Practice',
+      practiceSettings: '⚙️ Practice Settings',
+      practiceComplete: 'Practice Complete!',
+      anotherRound: '🔄 Another Round',
+      backToSelect: '🏠 Back to Select',
+      loadingQuestions: 'Loading questions…',
+      examSettings: '📝 Exam Settings',
+      examSubject: 'Subject',
+      timeLimit: 'Time (min)',
+      passScore: 'Pass Score (%)',
+      startExam: '🎯 Start Exam',
+      submitExam: '📤 Submit',
+      wrongBookTitle: '📕 Wrong Book',
+      wrongBookDesc: 'Wrong answers are automatically collected',
+      noWrong: 'No wrong answers yet — keep going!',
+      redoWrong: '🔄 Redo Wrong',
+      clearWrong: '🗑️ Clear All',
+      knowledgeTitle: '📚 Knowledge',
+      knowledgeDesc: 'Knowledge point display area',
+      totalQuestions: 'Total',
+      done: 'Done',
+      rate: 'Accuracy',
+      noQuestions: '❌ No questions found. Add files in the questions/ directory.',
+      selectTypeFirst: 'Please select a question type first',
+      noQuestionsForType: 'No questions available for this type',
+      prev: '⬅️ Previous',
+      next: '➡️ Next',
+      correct: '✅ Correct!',
+      wrong: '❌ Wrong',
+      correctAnswer: 'Correct answer',
+      explanation: '💡 Explanation',
+      noExplanation: 'No explanation available',
+      submitAnswer: '✅ Submit Answer',
+      inputAnswer: 'Type your answer here…',
+      confirmSubmit: 'Please enter an answer first',
+      examFinished: '📊 Exam Finished!',
+      passLabel: '🎉 Congratulations — Passed!',
+      failLabel: '😅 Not passed — keep trying!',
+      score: 'Score',
+      correctCount: 'Correct',
+      wrongCount: 'Wrong',
+      accuracy: 'Accuracy',
+      timeUsed: 'Time Used',
+      reviewAnswers: '📋 Review Answers',
+      close: 'Close',
+      detail: 'Details',
+      yourAnswer: 'Your answer',
+      answerLabel: 'Answer',
+      noKnowledge: 'No knowledge points yet',
+      totalLabel: 'Total',
+      encouragement: {
+        start: 'Start practicing! 🚀',
+        excellent: 'Excellent! You\'re a genius! 🎉',
+        great: 'Great job! Keep it up! 🌟',
+        good: 'Good work! 💪',
+        pass: 'You passed — keep improving! 📚',
+        keep: 'Don\'t give up — persistence wins! 🔥'
+      },
+      timeRemaining: 'Time Remaining',
+    }
+  };
+
+  function t(key) {
+    var keys = key.split('.');
+    var val = i18n[LANG];
+    for (var i = 0; val && i < keys.length; i++) {
+      val = val[keys[i]];
+    }
+    return val !== undefined ? val : key;
+  }
+
+  window.toggleLang = function() {
+    LANG = (LANG === 'zh') ? 'en' : 'zh';
+    $('langZh').className = (LANG === 'zh') ? 'active' : '';
+    $('langEn').className = (LANG === 'en') ? 'active' : '';
+    applyI18n();
+    // Re-render dynamic content
+    updateStatsBar();
+    updateNavStats();
+    renderWrongBook();
+    renderKnowledgePoints();
+    // Re-render current question if in practice/exam
+    if (!$('mode-practice').classList.contains('hidden') && state.practiceQuestions.length > 0) {
+      renderPracticeQuestion();
+    }
+    if (!$('mode-exam').classList.contains('hidden') && state.examQuestions.length > 0) {
+      renderExamQuestion();
+    }
+  };
+
+  function applyI18n() {
+    // Static elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+    // Page title
+    $('pageTitle').textContent = t('navTitle') + ' · Discrete Math Final Review';
+    // Nav title
+    $('navTitle').textContent = t('navTitle');
+    // Nav stats labels
+    $('navStatsLabel').textContent = t('totalQuestions') + ':';
+    $('navDoneLabel').textContent = t('done') + ':';
+    $('navRateLabel').textContent = t('rate') + ':';
+  }
+
+  /* ============================================================
+   *  Question i18n helper — gets the right language field
+   * ============================================================ */
+  function qText(q, field) {
+    var langField = field + 'En';
+    if (LANG === 'en' && q[langField] !== undefined) return q[langField];
+    return q[field];
+  }
+
+  function qOptions(q) {
+    if (LANG === 'en' && Array.isArray(q.optionsEn)) return q.optionsEn;
+    return q.options || [];
+  }
+
+  function qAnswer(q) {
+    if (LANG === 'en' && q.answerEn !== undefined) return q.answerEn;
+    return q.answer;
+  }
+
+  /* ============================================================
+   *  State variables
+   * ============================================================ */
+  var state = {
+    practiceQuestions: [],
+    practiceIndex: 0,
+    practiceAnswers: {},
+    practiceAnswered: false,
+    practiceType: null,
+    practiceCorrect: 0,
+    practiceWrong: 0,
+    practiceTotal: 0,
+    practiceShowExplanation: 'yes',
+
+    examQuestions: [],
+    examIndex: 0,
+    examAnswers: {},
+    examStartTime: 0,
+    examTimer: null,
+    examTimeLimit: 0,
+    examType: null,
+    examCount: 0,
+    examSubmitted: false,
+    examCorrect: 0,
+    examWrong: 0,
+
+    wrongBook: [],
+    replayMode: false,
+    replayQuestions: [],
+    replayIndex: 0,
+  };
+
+  /* ============================================================
+   *  LocalStorage helpers
+   * ============================================================ */
+  var STORAGE_KEY_WRONG = 'examSkeleton_wrongBook_v1';
+  var STORAGE_KEY_STATS = 'examSkeleton_stats_v1';
+
+  function loadWrongBook() {
+    try { state.wrongBook = JSON.parse(localStorage.getItem(STORAGE_KEY_WRONG) || '[]'); }
+    catch(e) { state.wrongBook = []; }
+  }
+  function saveWrongBook() {
+    localStorage.setItem(STORAGE_KEY_WRONG, JSON.stringify(state.wrongBook));
+  }
+  function loadStats() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_STATS) || '{"total":0,"correct":0,"wrong":0}'); }
+    catch(e) { return {total:0, correct:0, wrong:0}; }
+  }
+  function saveStats(s) {
+    localStorage.setItem(STORAGE_KEY_STATS, JSON.stringify(s));
+  }
+  loadWrongBook();
+
+  /* ============================================================
+   *  Utilities
+   * ============================================================ */
+  var $ = function(id) { return document.getElementById(id); };
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(text));
+    return d.innerHTML;
+  }
+
+  function shuffle(arr) {
+    for (var i = arr.length-1; i > 0; i--) {
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  function getEncouragement(rate) {
+    if (rate >= 90) return t('encouragement.excellent');
+    if (rate >= 80) return t('encouragement.great');
+    if (rate >= 70) return t('encouragement.good');
+    if (rate >= 60) return t('encouragement.pass');
+    if (rate > 0)  return t('encouragement.keep');
+    return t('encouragement.start');
+  }
+
+  /* ============================================================
+   *  UI Updates
+   * ============================================================ */
+  function updateNavStats() {
+    var stats = loadStats();
+    var total = stats.total || 0;
+    var correct = stats.correct || 0;
+    var rate = total > 0 ? Math.round(correct/total*100) : 0;
+    $('totalQCount').textContent = window.题库 ? window.题库.getTotalCount() : 0;
+    $('totalDone').textContent = total;
+    $('totalRate').textContent = rate + '%';
+  }
+
+  function updateStatsBar() {
+    var stats = loadStats();
+    var total = stats.total || 0;
+    var correct = stats.correct || 0;
+    var wrong = stats.wrong || 0;
+    var rate = total > 0 ? Math.round(correct/total*100) : 0;
+
+    $('statsBarContainer').innerHTML =
+      '<div class="stats-bar">'
+      + '<div class="stats-item"><div class="value">' + total + '</div><div class="label">' + t('totalQuestions') + '</div></div>'
+      + '<div class="stats-item correct"><div class="value">' + correct + '</div><div class="label">' + t('correctCount') + '</div></div>'
+      + '<div class="stats-item wrong"><div class="value">' + wrong + '</div><div class="label">' + t('wrongCount') + '</div></div>'
+      + '<div class="stats-item"><div class="value">' + rate + '%</div><div class="label">' + t('rate') + '</div></div>'
+      + '<div class="stats-item" style="flex:2"><div class="value" style="font-size:16px">' + getEncouragement(rate) + '</div></div>'
+      + '</div>';
+  }
+
+  function updateWrongTabCount() {
+    $('wrongTabCount').textContent = state.wrongBook.length;
+  }
+
+  /* ============================================================
+   *  Rendering
+   * ============================================================ */
+  function renderTypeTabs() {
+    if (!window.题库) return;
+    var types = window.题库.getTypes();
+    if (types.length === 0) return;
+    $('practiceTypeTabs').innerHTML = types.map(function(t) {
+      var count = window.题库.getTypeCount(t);
+      return '<div class="type-tab" data-type="' + t + '" onclick="window.selectType(\'' + t + '\')">'
+           + escapeHtml(t) + ' <span class="count">(' + count + ')</span></div>';
+    }).join('');
+
+    var examSelect = $('examType');
+    examSelect.innerHTML = types.map(function(t) {
+      return '<option value="' + t + '">' + escapeHtml(t) + ' (' + window.题库.getTypeCount(t) + ')</option>';
+    }).join('');
+
+    selectType(types[0]);
+  }
+
+  window.selectType = function(type) {
+    state.practiceType = type;
+    document.querySelectorAll('#practiceTypeTabs .type-tab').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.type === type);
+    });
+    $('practicePanel').classList.add('hidden');
+    $('practiceEnd').classList.add('hidden');
+    $('practiceSettings').classList.remove('hidden');
+  };
+
+  window.switchMode = function(mode) {
+    document.querySelectorAll('.mode-tab').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.mode === mode);
+    });
+    ['practice','exam','wrongbook','knowledge'].forEach(function(name) {
+      var el = $('mode-'+name);
+      if (el) el.classList.toggle('hidden', name !== mode);
+    });
+    if (mode === 'wrongbook') renderWrongBook();
+    if (mode === 'knowledge') renderKnowledgePoints();
+    if (mode === 'exam') renderTypeTabs();
+  };
+
+  /* ============================================================
+   *  Practice Mode
+   * ============================================================ */
+  window.startPractice = function() {
+    if (!state.practiceType) { alert(t('selectTypeFirst')); return; }
+    var count = parseInt($('practiceCount').value) || 10;
+    var pool = window.题库.getRandomQuestions(state.practiceType, count);
+    if (pool.length === 0) { alert(t('noQuestionsForType')); return; }
+
+    state.practiceQuestions = pool;
+    state.practiceIndex = 0;
+    state.practiceAnswers = {};
+    state.practiceCorrect = 0;
+    state.practiceWrong = 0;
+    state.practiceTotal = pool.length;
+    state.practiceShowExplanation = $('practiceShowExplanation').value;
+
+    $('practiceSettings').classList.add('hidden');
+    $('practiceEnd').classList.add('hidden');
+    $('practicePanel').classList.remove('hidden');
+    renderPracticeQuestion();
+  };
+
+  function renderPracticeQuestion() {
+    var q = state.practiceQuestions[state.practiceIndex];
+    if (!q) { finishPractice(); return; }
+    state.practiceAnswered = false;
+    var total = state.practiceTotal;
+    $('practiceProgress').textContent = t('totalLabel') + ': ' + (state.practiceIndex+1)+'/'+total;
+    $('practiceTypeLabel').textContent = state.practiceType;
+
+    var hasOptions = Array.isArray(qOptions(q)) && qOptions(q).length > 0;
+    var letters = ['A','B','C','D','E','F','G','H'];
+    var html = '';
+    html += '<div class="q-title">' + escapeHtml(qText(q, 'question')) + '</div>';
+
+    if (!hasOptions && !q.code) {
+      html += '<div><textarea class="q-textarea" id="textAnswerInput" placeholder="' + t('inputAnswer') + '"></textarea>'
+           + '<button class="btn btn-primary" style="margin-top:10px" onclick="submitTextAnswer(\'' + q.id + '\')">' + t('submitAnswer') + '</button></div>';
+    }
+
+    if (hasOptions) {
+      html += '<div class="options" id="practiceOptions">';
+      var opts = qOptions(q);
+      opts.forEach(function(opt, i) {
+        var letter = letters[i] || String.fromCharCode(65+i);
+        html += '<div class="option" data-letter="' + letter + '" onclick="selectPracticeOption(this,\'' + q.id + '\')">'
+             + '<span class="letter">' + letter + '</span><span>' + escapeHtml(opt) + '</span></div>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="btn-row">'
+         + '<button class="btn btn-outline" onclick="prevPracticeQuestion()">' + t('prev') + '</button>'
+         + '<button class="btn btn-outline" onclick="nextPracticeQuestion()">' + t('next') + '</button></div>'
+         + '<div id="practiceResult" class="result-box hidden"></div>'
+         + '<div id="practiceExplanation" class="explanation-box hidden"></div>';
+    $('practiceQuestionArea').innerHTML = html;
+  }
+
+  window.selectPracticeOption = function(el, qid) {
+    if (state.practiceAnswered) return;
+    document.querySelectorAll('#practiceOptions .option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    state.practiceAnswers[qid] = el.dataset.letter;
+    showPracticeResult();
+  };
+
+  window.submitTextAnswer = function(qid) {
+    if (state.practiceAnswered) return;
+    var input = $('textAnswerInput');
+    if (!input || !input.value.trim()) { alert(t('confirmSubmit')); return; }
+    state.practiceAnswers[qid] = input.value.trim();
+    showPracticeResult();
+  };
+
+  function showPracticeResult() {
+    var q = state.practiceQuestions[state.practiceIndex];
+    var userAnswer = state.practiceAnswers[q.id] || '';
+    var hasOptions = Array.isArray(qOptions(q)) && qOptions(q).length > 0;
+    var correct = qAnswer(q) === undefined ? true : (userAnswer === qAnswer(q));
+    state.practiceAnswered = true;
+
+    if (hasOptions) {
+      document.querySelectorAll('#practiceOptions .option').forEach(function(o) {
+        o.classList.add('disabled');
+        if (o.dataset.letter === qAnswer(q)) o.classList.add('correct');
+        else if (o.classList.contains('selected') && !correct) o.classList.add('wrong');
+      });
+    } else {
+      var input = $('textAnswerInput');
+      if (input) input.disabled = true;
+    }
+
+    var resBox = $('practiceResult');
+    if (correct) {
+      resBox.className = 'result-box correct';
+      resBox.innerHTML = '<span class="label">' + t('correct') + '</span>';
+      state.practiceCorrect++;
+    } else {
+      resBox.className = 'result-box wrong';
+      resBox.innerHTML = '<span class="label">' + t('wrong') + '</span> | '
+        + t('correctAnswer') + ': <strong>' + escapeHtml(qAnswer(q)) + '</strong>';
+      state.practiceWrong++;
+      addToWrongBook(q, userAnswer);
+    }
+    resBox.classList.remove('hidden');
+
+    var expBox = $('practiceExplanation');
+    if (state.practiceShowExplanation === 'yes') {
+      var msg = q.explanation || q.explanationEn || t('noExplanation');
+      expBox.innerHTML = '<span class="label">' + t('explanation') + '</span>' + escapeHtml(msg);
+      expBox.classList.remove('hidden');
+    }
+
+    var st = loadStats();
+    st.total = (st.total||0) + 1;
+    if (correct) st.correct = (st.correct||0) + 1;
+    else st.wrong = (st.wrong||0) + 1;
+    saveStats(st);
+    updateNavStats();
+    updateStatsBar();
+  }
+
+  function addToWrongBook(q, userAnswer) {
+    var existing = null;
+    for (var i = 0; i < state.wrongBook.length; i++) {
+      if (state.wrongBook[i].id === q.id) { existing = state.wrongBook[i]; break; }
+    }
+    if (existing) {
+      existing.count = (existing.count||1) + 1;
+      existing.lastAnswer = userAnswer;
+    } else {
+      state.wrongBook.push({ id: q.id, type: state.practiceType, count: 1, lastAnswer: userAnswer });
+    }
+    saveWrongBook();
+    updateWrongTabCount();
+  }
+
+  window.prevPracticeQuestion = function() {
+    if (state.practiceIndex > 0) { state.practiceIndex--; renderPracticeQuestion(); }
+  };
+  window.nextPracticeQuestion = function() {
+    if (state.practiceIndex < state.practiceTotal-1) { state.practiceIndex++; renderPracticeQuestion(); }
+    else { finishPractice(); }
+  };
+
+  function finishPractice() {
+    $('practicePanel').classList.add('hidden');
+    $('practiceEnd').classList.remove('hidden');
+    var stats = state.practiceTotal + ' ' + t('totalQuestions') + ', '
+              + t('correctCount') + ': ' + state.practiceCorrect + ', '
+              + t('wrongCount') + ': ' + state.practiceWrong + ', '
+              + t('rate') + ': ' + (state.practiceTotal > 0 ? Math.round(state.practiceCorrect/state.practiceTotal*100) : 0) + '%';
+    $('practiceEndStats').textContent = stats;
+  }
+
+  /* ============================================================
+   *  Exam Mode
+   * ============================================================ */
+  window.startExam = function() {
+    var type = $('examType').value;
+    var count = parseInt($('examCount').value) || 20;
+    var minutes = parseInt($('examTimeLimit').value) || 30;
+
+    var pool = window.题库.getRandomQuestions(type, count);
+    if (pool.length === 0) { alert(t('noQuestionsForType')); return; }
+
+    state.examQuestions = pool;
+    state.examIndex = 0;
+    state.examAnswers = {};
+    state.examSubmitted = false;
+    state.examCorrect = 0;
+    state.examWrong = 0;
+    state.examCount = pool.length;
+    state.examType = type;
+    state.examTimeLimit = minutes * 60;
+    state.examStartTime = Date.now();
+
+    $('examSetup').classList.add('hidden');
+    $('examResult').classList.add('hidden');
+    $('examPanel').classList.remove('hidden');
+
+    // Timer
+    if (state.examTimer) clearInterval(state.examTimer);
+    state.examTimer = setInterval(updateExamTimer, 1000);
+    updateExamTimer();
+
+    renderExamQuestion();
+  };
+
+  function updateExamTimer() {
+    if (state.examSubmitted) return;
+    var elapsed = Math.floor((Date.now() - state.examStartTime) / 1000);
+    var remaining = Math.max(0, state.examTimeLimit - elapsed);
+    var min = Math.floor(remaining / 60);
+    var sec = remaining % 60;
+    $('examTimeDisplay').textContent = (min<10?'0':'')+min+':'+(sec<10?'0':'')+sec;
+    var box = $('examTimer');
+    box.className = 'timer-box';
+    if (remaining < 60) box.classList.add('danger');
+    else if (remaining < 300) box.classList.add('warning');
+    if (remaining <= 0) { submitExam(); }
+  }
+
+  function renderExamQuestion() {
+    var q = state.examQuestions[state.examIndex];
+    if (!q) return;
+    var total = state.examCount;
+    $('examProgress').textContent = (state.examIndex+1) + ' / ' + total;
+
+    var hasOptions = Array.isArray(qOptions(q)) && qOptions(q).length > 0;
+    var letters = ['A','B','C','D','E','F','G','H'];
+    var html = '<div class="q-title">' + escapeHtml(qText(q, 'question')) + '</div>';
+
+    if (!hasOptions && !q.code) {
+      html += '<div><textarea class="q-textarea" id="examTextAnswer" placeholder="' + t('inputAnswer') + '"></textarea></div>';
+    }
+    if (hasOptions) {
+      html += '<div class="options" id="examOptions">';
+      var opts = qOptions(q);
+      opts.forEach(function(opt, i) {
+        var letter = letters[i] || String.fromCharCode(65+i);
+        var selected = (state.examAnswers[q.id] === letter) ? ' selected' : '';
+        html += '<div class="option' + selected + '" data-letter="' + letter + '" onclick="selectExamOption(this,\'' + q.id + '\')">'
+             + '<span class="letter">' + letter + '</span><span>' + escapeHtml(opt) + '</span></div>';
+      });
+      html += '</div>';
+    }
+
+    // Answer sheet
+    html += '<div style="margin-top:20px"><div class="question-grid">';
+    state.examQuestions.forEach(function(eq, i) {
+      var cls = 'question-num';
+      if (state.examAnswers[eq.id]) cls += ' answered';
+      html += '<div class="' + cls + '" onclick="jumpExamQuestion(' + i + ')" title="' + t('detail') + '">' + (i+1) + '</div>';
+    });
+    html += '</div></div>';
+
+    html += '<div class="btn-row"><button class="btn btn-outline" onclick="prevExamQuestion()">' + t('prev') + '</button>'
+         + '<button class="btn btn-outline" onclick="nextExamQuestion()">' + t('next') + '</button></div>';
+    $('examQuestionArea').innerHTML = html;
+  }
+
+  window.selectExamOption = function(el, qid) {
+    if (state.examSubmitted) return;
+    document.querySelectorAll('#examOptions .option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    state.examAnswers[qid] = el.dataset.letter;
+  };
+
+  window.prevExamQuestion = function() {
+    if (state.examIndex > 0) { state.examIndex--; renderExamQuestion(); }
+  };
+  window.nextExamQuestion = function() {
+    if (state.examIndex < state.examCount-1) { state.examIndex++; renderExamQuestion(); }
+  };
+  window.jumpExamQuestion = function(i) {
+    state.examIndex = i;
+    renderExamQuestion();
+  };
+
+  window.submitExam = function() {
+    if (state.examSubmitted) return;
+    if (state.examTimer) { clearInterval(state.examTimer); state.examTimer = null; }
+    state.examSubmitted = true;
+
+    // Save text answer if present
+    var textInput = $('examTextAnswer');
+    if (textInput && textInput.value.trim()) {
+      state.examAnswers[state.examQuestions[state.examIndex].id] = textInput.value.trim();
+    }
+
+    // Grade
+    var correct = 0, wrong = 0;
+    state.examQuestions.forEach(function(q) {
+      var ua = state.examAnswers[q.id];
+      if (ua && qAnswer(q) && ua === qAnswer(q)) {
+        correct++;
+        state.examCorrect++;
+      } else {
+        wrong++;
+        state.examWrong++;
+      }
+    });
+
+    // Update stats
+    var st = loadStats();
+    st.total = (st.total||0) + state.examCount;
+    st.correct = (st.correct||0) + correct;
+    st.wrong = (st.wrong||0) + wrong;
+    saveStats(st);
+    updateNavStats();
+    updateStatsBar();
+
+    // Save wrong answers
+    state.examQuestions.forEach(function(q) {
+      var ua = state.examAnswers[q.id];
+      if (!ua || !qAnswer(q) || ua !== qAnswer(q)) {
+        addToWrongBook(q, ua || '');
+      }
+    });
+
+    // Show result
+    var total = state.examCount;
+    var score = total > 0 ? Math.round(correct/total*100) : 0;
+    var passScore = parseInt($('examPassScore').value) || 60;
+    var passed = score >= passScore;
+    var elapsed = Math.floor((Date.now() - state.examStartTime) / 1000);
+    var min = Math.floor(elapsed / 60);
+    var sec = elapsed % 60;
+
+    $('examPanel').classList.add('hidden');
+    $('examResult').classList.remove('hidden');
+    $('examResult').innerHTML =
+      '<div class="result-panel">'
+      + '<div class="score ' + (passed?'pass':'fail') + '">' + score + '<span style="font-size:20px">/100</span></div>'
+      + '<div style="font-size:18px;margin-bottom:16px">' + (passed ? t('passLabel') : t('failLabel')) + '</div>'
+      + '<div class="stats">'
+      + '<span>' + t('correctCount') + ': ' + correct + '/' + total + '</span>'
+      + '<span>' + t('wrongCount') + ': ' + wrong + '/' + total + '</span>'
+      + '<span>' + t('accuracy') + ': ' + score + '%</span>'
+      + '<span>' + t('timeUsed') + ': ' + min + 'm ' + sec + 's</span>'
+      + '</div>'
+      + '<div class="btn-row" style="justify-content:center">'
+      + '<button class="btn btn-primary" onclick="startExam()">🔄 ' + t('anotherRound') + '</button>'
+      + '<button class="btn btn-outline" onclick="switchMode(\'exam\')">🏠 ' + t('backToSelect') + '</button>'
+      + '</div></div>';
+  };
+
+  /* ============================================================
+   *  Wrong Book
+   * ============================================================ */
+  function renderWrongBook() {
+    var list = $('wrongList');
+    var actions = $('wrongActions');
+    $('wrongTitleCount').textContent = '(' + state.wrongBook.length + ')';
+
+    if (state.wrongBook.length === 0) {
+      list.innerHTML = '<div class="wrong-empty">✨ ' + t('noWrong') + '</div>';
+      actions.style.display = 'none';
+      return;
+    }
+    actions.style.display = '';
+
+    // Sort by count desc
+    state.wrongBook.sort(function(a,b) { return (b.count||1) - (a.count||1); });
+
+    var html = '';
+    state.wrongBook.forEach(function(w) {
+      var q = findQuestionById(w.id);
+      if (!q) return;
+      html += '<div class="wrong-item">'
+           + '<div class="q-text">' + escapeHtml(qText(q, 'question')) + '</div>'
+           + '<div class="detail">'
+           + '<span class="your">' + t('yourAnswer') + ': ' + escapeHtml(w.lastAnswer||'') + '</span> | '
+           + '<span class="correct-ans">' + t('correctAnswer') + ': ' + escapeHtml(qAnswer(q)) + '</span>'
+           + '</div>'
+           + '<span class="error-count">❌ x' + (w.count||1) + '</span>'
+           + '</div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function findQuestionById(id) {
+    if (!window.题库) return null;
+    var types = window.题库.getTypes();
+    for (var t = 0; t < types.length; t++) {
+      var qs = window.题库.getQuestions(types[t]);
+      for (var i = 0; i < qs.length; i++) {
+        if (qs[i].id === id) return qs[i];
+      }
+    }
+    return null;
+  }
+
+  window.replayWrong = function() {
+    var questions = [];
+    state.wrongBook.forEach(function(w) {
+      var q = findQuestionById(w.id);
+      if (q) questions.push(q);
+    });
+    if (questions.length === 0) { alert(t('noWrong')); return; }
+    shuffle(questions);
+    state.replayMode = true;
+    state.practiceQuestions = questions;
+    state.practiceIndex = 0;
+    state.practiceAnswers = {};
+    state.practiceCorrect = 0;
+    state.practiceWrong = 0;
+    state.practiceTotal = questions.length;
+    state.practiceShowExplanation = 'yes';
+    state.practiceType = t('wrongBookTitle');
+
+    switchMode('practice');
+    $('practiceSettings').classList.add('hidden');
+    $('practiceEnd').classList.add('hidden');
+    $('practicePanel').classList.remove('hidden');
+    renderPracticeQuestion();
+  };
+
+  window.clearWrongBook = function() {
+    if (confirm(t('clearWrong') + '?')) {
+      state.wrongBook = [];
+      saveWrongBook();
+      updateWrongTabCount();
+      renderWrongBook();
+    }
+  };
+
+  /* ============================================================
+   *  Knowledge Points
+   * ============================================================ */
+  function renderKnowledgePoints() {
+    $('knowledgeList').innerHTML = '<div class="knowledge-empty">' + t('noKnowledge') + '</div>';
+  }
+
+  window.performSearch = function() {
+    var keyword = ($('searchInput').value || '').trim();
+    renderKnowledgePoints();
+    if (keyword) {
+      // highlight in knowledge area — placeholder for now
+    }
+  };
+
+  /* ============================================================
+   *  Init
+   * ============================================================ */
+  window.onQuestionsLoaded = function(bank) {
+    $('loadingBar').style.width = '100%';
+    setTimeout(function() { $('loadingBar').style.width = '0%'; }, 600);
+    applyI18n();
+    renderTypeTabs();
+    updateNavStats();
+    updateStatsBar();
+    renderWrongBook();
+    updateWrongTabCount();
+    renderKnowledgePoints();
+
+    var types = window.题库.getTypes();
+    if (types.length > 0) {
+      $('practiceEmpty').classList.add('hidden');
+    } else {
+      $('practiceEmpty').querySelector('p').textContent = t('noQuestions');
+    }
+  };
+
+  if (window.题库 && window.题库._raw && Object.keys(window.题库._raw).length > 0) {
+    window.onQuestionsLoaded(window.题库._raw);
+  }
+
+})();
+</script>
+</body>
+</html>
