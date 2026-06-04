@@ -1,12 +1,12 @@
-# 📐 离散数学 · 期末复习系统
-# 📐 Discrete Mathematics · Final Review System
+#  离散数学 · 期末复习系统
+#  Discrete Mathematics · Final Review System
 
-> 🇨🇳 基于通用考试练习骨架的离散数学（中英双语）期末复习题库
-> 🇬🇧 Discrete Mathematics bilingual final review bank, built on the exam skeleton framework
+>  基于通用考试练习骨架的离散数学（中英双语）期末复习题库
+>  Discrete Mathematics bilingual final review bank, built on the exam skeleton framework
 
 ---
 
-## 📊 题库概览 / Question Bank Overview
+##  题库概览 / Question Bank Overview
 
 | 题型 / Type | 题数 / Count | 覆盖章节 / Topics |
 |-------------|:-----------:|-------------------|
@@ -20,7 +20,7 @@
 
 ---
 
-## 📁 文件结构 / File Structure
+##  文件结构 / File Structure
 
 ```
 discrete-math-review/
@@ -37,7 +37,7 @@ discrete-math-review/
 
 ---
 
-## 🚀 开始使用 / How to Use
+##  开始使用 / How to Use
 
 1. **打开**：双击 `index.html`，用浏览器打开
 2. **切换语言**：点击右上角 `中 / EN` 按钮
@@ -47,7 +47,7 @@ discrete-math-review/
 
 ### 覆盖章节 / Topics Covered
 
-| 🇨🇳 章节 | 🇬🇧 Chapter | 题数 Qs |
+|  章节 |  Chapter | 题数 Qs |
 |---------|-------------|:------:|
 | 命题逻辑 | Propositional Logic | ~10 |
 | 谓词逻辑 | Predicate Logic | ~6 |
@@ -62,7 +62,7 @@ discrete-math-review/
 
 ---
 
-## 🧑‍🏫 使用建议 / Study Tips
+## ‍ 使用建议 / Study Tips
 
 - **先做选择题**快速回顾概念
 - **再做判断题**辨析易错点
@@ -72,6 +72,6 @@ discrete-math-review/
 
 ---
 
-## 📝 License
+##  License
 
 MIT — 自由使用、修改、分享
